@@ -112,7 +112,9 @@ template<typename Scalar>
 RotationQuaternionTemplate<Scalar>::RotationQuaternionTemplate(
     const RotationMatrix& matrix) :
     q_A_B_(matrix) {
-  CHECK(isValidRotationMatrix(matrix)) << matrix;
+  //CHECK(isValidRotationMatrix(matrix)) << matrix;
+  if(!isValidRotationMatrix(matrix))
+    q_A_B_ = fromApproximateRotationMatrix(matrix).toImplementation();
 }
 
 template<typename Scalar>
@@ -556,6 +558,8 @@ bool RotationQuaternionTemplate<Scalar>::isValidRotationMatrix(
   if (std::fabs(matrix.determinant() - static_cast<Scalar>(1.0)) > threshold) {
     VLOG(200) << matrix.determinant();
     VLOG(200) << matrix.determinant() - static_cast<Scalar>(1.0);
+    VLOG(200) << std::fabs(matrix.determinant() - static_cast<Scalar>(1.0));
+    VLOG(200) << threshold;
     return false;
   }
   if ((matrix * matrix.transpose() -
